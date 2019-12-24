@@ -1,0 +1,37 @@
+<div class="psi-modal-style" ng-init="initialize()">
+	<div class="modal-header">
+		<h3 class="modal-title">{{ textModalTitle }}</h3>
+	</div>
+	<form name="configureBroadcastGroupsModal">
+		<div class="modal-body" id="modal-body">
+			<div class="row kc-pad-10">
+				<div class="col-sm-12">
+					<label for="brdGrpSelectGrp" class="col-sm-4 control-label">Broadcast Groups</label>
+					<div class="col-sm-8 kc-no-left-padding" style="padding-right: 0;">
+						<select name="brdGrpSelectGrp" id="brdGrpSelect" type="text" class="form-control"
+								ng-model="broadcastGroupModel.selectedGroup"
+								ng-change="onSelectedGroupChanged()"
+								ng-options="option.label for option in broadcastGroupOptions.groups track by option.id"></select>
+					</div>
+				</div>
+			</div>
+			<br />
+			<div class="row kc-pad-10">
+				<div class="col-sm-12">
+					<label class="col-sm-4 control-label" for="brdGrpName">Name</label>
+					<div class="col-sm-8 kc-no-left-padding" style="padding-right: 0;">
+						<input id="brdGrpName" class="form-control" ng-model="broadcastGroupModel.groupName" type="text" maxlength="15" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-success btn-on-sm-only btn-on-xs-only" ng-click="save()" title="Save">
+				<i class="fa fa-floppy-o"></i>&nbsp;Save
+			</button>
+			<button type="button" class="btn btn-default btn-on-sm-only btn-on-xs-only" ng-click="cancel()" title="Cancel">
+				<i class="fa fa-ban"></i>&nbsp;Cancel
+			</button>
+		</div>
+	</form>
+</div>

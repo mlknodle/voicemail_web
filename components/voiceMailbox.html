@@ -1,0 +1,133 @@
+<h1>{{ titlePage }}</h1>
+<kc-cog ng-if="isLoadingSentEmails"></kc-cog>
+<div>
+	<div ng-show="!isLoadingSentEmails" class="col-sm-12 panel-group kc-no-padding" id="accordion">
+		<div class="panel-heading">
+			<div class="row kc-report-table-actions">
+				<button class="btn btn-primary" data-toggle="collapse" data-parent="#accordion" data-target="#filtersForm">
+					<i class="fa fa-cog"></i> Toggle Filters
+				</button>
+			</div>
+		</div>
+		<div class="psi-full-width kc-panel panel-collapse collapse in" id="filtersForm">
+			<div class="kc-panel-header">
+				<h3>Filter Criteria</h3>
+			</div>
+			<div class="kc-panel-detail col-xs-12">
+				<form name="emailReportForm">
+					<br />
+					<div class="row">
+						<div class="form-group col-sm-6">
+							<psi-datepicker datepicker-id="start" model="filters.startDate" text-label="From" />
+							<psi-time-input time-input-id="start" model="filters.startTime" is-military-time="currentUserIsDisplayMilitaryTime" />
+						</div>
+						<div class="form-group col-sm-6">
+							<psi-datepicker datepicker-id="end" model="filters.endDate" text-label="To" />
+							<psi-time-input time-input-id="end" model="filters.endTime" is-military-time="currentUserIsDisplayMilitaryTime" default-to-max-time="true" />
+						</div>
+					</div>
+					<br />
+
+					<div class="row">
+						<div class="form-group col-sm-6" ng-if="filterOptions.users.length > 0">
+							<psi-dropdown label-text="Users"
+										  model="filters.users"
+										  options="filterOptions.users">
+							</psi-dropdown>
+						</div>
+						<div class="form-group col-sm-6" ng-if="filterOptions.emailTypes.length > 0">
+							<psi-dropdown label-text="Email Types"
+										  model="filters.emailTypes"
+										  options="filterOptions.emailTypes">
+							</psi-dropdown>
+						</div>
+					</div>
+					<br />
+
+					<div class="row">
+						<div class="form-group col-sm-6">
+							<label class="col-sm-4 control-label" for="recipAddresses">Recipients</label>
+							<div class="col-sm-6 kc-no-left-padding no-right-padding">
+								<input id="recipAddresses" class="form-control ignore-max-width-setting" ng-keypress="keyPressAddRecipAddress($event)" ng-model="filters.recipAddressModel" type="text" />
+							</div>
+							<div class="col-sm-2 kc-no-left-padding">
+								<button type="button" class="btn btn-success psi-full-width" ng-click="addRecipAddress()" ng-disabled="!filters.recipAddressModel">
+									<i class="fa fa-plus"></i> Add
+								</button>
+							</div>
+						</div>
+
+						<div ng-if="filters.recipAddresses.length >= 1" class="col-sm-6">
+							<div class="kc-multi-select-tag" id="activeRecipAddresses" ng-repeat="recip in filters.recipAddresses">
+								{{ recip }}&nbsp;&nbsp;
+								<span class="kc-clickable" ng-click="deselectRecipAddress($index)">
+									<i class="glyphicon glyphicon-remove"></i>
+								</span>
+							</div>
+						</div>
+						<div ng-if="filters.recipAddresses.length < 1" class="col-sm-6">
+							<span>No Recipient Addresses Selected</span>
+						</div>
+					</div>
+
+					<div class="col-xs-12" style="margin-top: 20px;">
+						<psi-btn-run-report form-submit="loadData()" is-disabled="isLoadingData()" />
+						<psi-btn-reset click="setFiltersToDefaults()" />
+						<psi-btn-download click="downloadPdf()" is-downloading="isLoadingExport" type="pdf" />
+						<psi-btn-download click="downloadExcel()" is-downloading="isLoadingExport" type="excel" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div ng-show="!isLoadingSentEmails && isResultsLoaded">
+		<div class="kc-panel col-sm-12 kc-large-display-only">
+			<div class="kc-panel-header col-sm-12" id="resultsHeader">
+				<h3>{{ titlePanelResultsHeader }}</h3>
+			</div>
+			<div class="kc-panel-detail-light clearfix">
+				<table class="kc-table col-sm-12" st-pipe="callServer" st-table="sentEmails">
+					<thead>
+						<tr>
+							<th class="kc-sortable" st-sort="UtcWhenSent">Sent Date</th>
+							<th class="kc-sortable" st-sort="TemplateName">Email Type</th>
+							<th>To Addresses</th>
+							<th>CC Addresses</th>
+							<th class="kc-sortable" st-sort="Subject">Subject</th>
+							<th class="kc-sortable" st-sort="SentByUsername">Sent By</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody ng-show="!isResultsEmpty()">
+						<tr ng-repeat="email in sentEmails" ng-class="{'kc-odd': $index % 2 == 0 }">
+							<td>{{ email.localWhenSent | date: currentUserIsDisplayMilitaryTime ? 'MM/dd/yyyy @ HH:mm' : 'MM/dd/yyyy @ h:mma' }}</td>
+							<td>{{ email.templateNameDisplay }}</td>
+							<td>{{ email.toAddresses }}</td>
+							<td>{{ email.ccAddresses }}</td>
+							<td title="{{ email.subject }}">{{ email.subjectDisplay }}</td>
+							<td>{{ email.sentByUsername }}</td>
+							<td style="text-align: center;">
+								<a href="#!/emails/{{email.id}}" title="View Email">
+									<i class="fa fa-eye"></i>
+								</a>
+							</td>
+						</tr>
+					</tbody>
+					<tbody ng-show="isResultsEmpty()">
+						<tr class="kc-odd">
+							<td colspan="6"><h4>{{ textNoResults }}</h4></td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="12" class="text-center">
+								<div st-items-by-page="itemsByPage" st-pagination="" st-template="js/components/shared/pagination_custom.html"></div>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+				<psi-scroll-to ng-if="itemsByPage > 10 && sentEmails.length > 10" add-classes="psi-float-right" scroll-to-id="#resultsHeader"></psi-scroll-to>
+			</div>
+		</div>
+	</div>
+</div>
