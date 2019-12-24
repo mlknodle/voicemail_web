@@ -1,0 +1,131 @@
+<h1>Configure Voicemail Settings</h1>
+<div>
+	<kc-cog ng-if="loadingInitialData"></kc-cog>
+	<div ng-show="!loadingInitialData" class="kc-panel col-sm-12">
+		<div class="kc-panel-header">
+			<div class="col-sm-6 col-lg-3" style="padding-top: 10px;">
+				<h3>{{ facilityData.facility_name }}</h3>
+			</div>
+			<div class="col-sm-6 col-lg-3 col-lg-offset-1">
+				<label for="mbxCfgSelect" class="control-label">Class of Service</label>
+				<select name="mbxCfgSelect" id="mbxCfgSelect" type="text" class="form-control"
+						ng-model="configModel.selectedCos"
+						ng-change="onSelectedCosChanged()"
+						ng-options="option.label for option in configModelOptions.mailboxConfigs track by option.id"></select>
+			</div>
+		</div>
+		<div class="kc-panel-detail kc-pad-10 col-xs-12">
+			<form ng-submit="save()" name="facilityVmConfigForm">
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgCosName" class="control-label">C.O.S. Name</label>
+					<input name="mbxCfgCosName" id="mbxCfgCosName" type="text" class="form-control" ng-model="configModel.cosName" ng-maxlength="15" required />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgMaxMsgs" class="control-label" title="Maximum Messages (0-999; 0=unlimited)">Maximum Messages (0-999; 0=unlimited)</label>
+					<input name="mbxCfgMaxMsgs" id="mbxCfgMaxMsgs" type="number" class="form-control" ng-model="configModel.maxMsgs" title="Maximum Messages (0-999; 0=unlimited)" min="0" max="999" only-digits required />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgMaxSaved" class="control-label" title="Maximum Saved Messages (0-999)">Maximum Saved Messages (0-999)</label>
+					<input name="mbxCfgMaxSaved" id="mbxCfgMaxSaved" type="number" class="form-control" ng-model="configModel.maxSaved" title="Maximum Saved Messages (0-999)" min="0" max="999" only-digits required />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgMaxMsgLen" class="control-label" title="Maximum Message Length (0-999 seconds)">Maximum Message Length (0-999 seconds)</label>
+					<input name="mbxCfgMaxMsgLen" id="mbxCfgMaxMsgLen" type="number" class="form-control" ng-model="configModel.maxMsgLen" title="Maximum Message Length (0-999 seconds)" min="0" max="999" only-digits required />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgMaxRetTimeNew" class="control-label" title="New Message Retention Time (0-99 days)">New Message Retention Time (0-99 days)</label>
+					<input name="mbxCfgMaxRetTimeNew" id="mbxCfgMaxRetTimeNew" type="number" class="form-control" ng-model="configModel.maxRetTimeNew" title="New Message Retention Time (0-99 days)" min="0" max="99" only-digits required />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgMaxRetTimeSaved" class="control-label" title="Saved Message Retention Time (0-99 days)">Saved Message Retention Time (0-99 days)</label>
+					<input name="mbxCfgMaxRetTimeSaved" id="mbxCfgMaxRetTimeSaved" type="number" class="form-control" ng-model="configModel.maxRetTimeSaved" title="Saved Message Retention Time (0-99 days)" min="0" max="99" only-digits required />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgMaxStorageSpace" class="control-label" title="Maximum Storage Space (0-99,999 seconds)">Maximum Storage Space (0-99,999 seconds)</label>
+					<input name="mbxCfgMaxStorageSpace" id="mbxCfgMaxStorageSpace" type="number" class="form-control" ng-model="configModel.maxStorageSpace" title="Maximum Storage Space (0-99,999 seconds)" min="0" max="99999" only-digits required />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgMaxLockoutTime" class="control-label" title="Maximum Lockout Time (0-99 minutes)">Maximum Lockout Time (0-99 minutes)</label>
+					<input name="mbxCfgMaxLockoutTime" id="mbxCfgMaxLockoutTime" type="number" class="form-control" ng-model="configModel.maxLockoutTime" title="Maximum Lockout Time (0-99 minutes)" min="0" max="99" only-digits required />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgMaxListenCnt" class="control-label" title="Maximum Listen Count (0-99)">Maximum Listen Count (0-99)</label>
+					<input name="mbxCfgMaxListenCnt" id="mbxCfgMaxListenCnt" type="number" class="form-control" ng-model="configModel.maxListenCnt" title="Maximum Listen Count (0-99)" min="0" max="99" only-digits required />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgFeeTypeGroup" class="control-label" title="Fee Type">Fee Type</label>
+					<div name="mbxCfgFeeTypeGroup" id="mbxCfgFeeTypeGroup">
+						<label ng-repeat="feeType in configModelOptions.feeTypes track by $index" class="col-sm-12">
+							<input type="radio" name="mbxCfgFeeType" ng-model="configModel.feeType" ng-value="feeType" ng-title="feeType" />&nbsp;{{ feeType }}
+						</label>
+					</div>
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgFee" class="control-label" title="Fee (0-999 cents)">Fee (0-999 cents)</label>
+					<input name="mbxCfgFee" id="mbxCfgFee" type="number" class="form-control" ng-model="configModel.fee" title="Fee (0-999 cents)" min="0" max="999" only-digits />
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgAdminApproval" class="control-label" title="Require Admin Approval">
+						<input name="mbxCfgAdminApproval" id="mbxCfgAdminApproval" type="checkbox" ng-model="configModel.adminApproval" title="Require Admin Approval" />&nbsp;Require Admin Approval
+					</label>
+				</div>
+
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgAutoSave" class="control-label" title="Auto Save">
+						<input name="mbxCfgAutoSave" id="mbxCfgAutoSave" type="checkbox" ng-model="configModel.autoSave" title="Auto Save" />&nbsp;Auto Save
+					</label>
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgPendingEnable" class="control-label" title="Pending Enabled">
+						<input name="mbxCfgPendingEnable" id="mbxCfgPendingEnable" type="checkbox" ng-model="configModel.pendingEnable" title="Pending Enabled" />&nbsp;Pending Enabled
+					</label>
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgRecNameEnable" class="control-label" title="Record Name">
+						<input name="mbxCfgRecNameEnable" id="mbxCfgRecNameEnable" type="checkbox" ng-model="configModel.recNameEnable" title="Record Name" />&nbsp;Record Name
+					</label>
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgRecNameOnceEnable" class="control-label" title="Record Name Once">
+						<input name="mbxCfgRecNameOnceEnable" id="mbxCfgRecNameOnceEnable" type="checkbox" ng-model="configModel.recNameOnceEnable" title="Record Name Once" />&nbsp;Record Name Once
+					</label>
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgRecGreetEnable" class="control-label" title="Record Greeting">
+						<input name="mbxCfgRecGreetEnable" id="mbxCfgRecGreetEnable" type="checkbox" ng-model="configModel.recGreetEnable" title="Record Greeting" />&nbsp;Record Greeting
+					</label>
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgRecGreetOnceEnable" class="control-label" title="Record Greeting Once">
+						<input name="mbxCfgRecGreetOnceEnable" id="mbxCfgRecGreetOnceEnable" type="checkbox" ng-model="configModel.recGreetOnceEnable" title="Record Greeting Once" />&nbsp;Record Greeting Once
+					</label>
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgExtPayment" class="control-label" title="External Payment">
+						<input name="mbxCfgExtPayment" id="mbxCfgExtPayment" type="checkbox" ng-model="configModel.extPayment" title="External Payment" />&nbsp;External Payment
+					</label>
+				</div>
+				<div class="form-group col-sm-6 col-lg-4">
+					<label for="mbxCfgBroadcast" class="control-label" title="Can Broadcast">
+						<input name="mbxCfgBroadcast" id="mbxCfgBroadcast" type="checkbox" ng-model="configModel.broadcast" title="Can Broadcast" />&nbsp;Can Broadcast
+					</label>
+				</div>
+
+				<div class="col-xs-12">
+					<button type="button" ng-click="openBroadcastGroupModal()" class="kc-report-button btn btn-primary" title="Configure Broadcast Groups">
+						<i class="fa fa-cogs"></i>&nbsp;Configure Broadcast Groups
+					</button>
+					<button type="button" ng-disabled="saving" ng-click="cancel()" class="kc-report-button btn btn-default pull-right" title="Cancel">
+						<i class="fa fa-ban"></i>&nbsp;Cancel
+					</button>
+					<button type="button" ng-disabled="saving" ng-click="reset()" class="kc-report-button btn btn-primary pull-right" title="Reset">
+						<i class="fa fa-undo"></i>&nbsp;Reset
+					</button>
+					<button type="submit" ng-disabled="facilityVmConfigForm.$invalid || facilityVmConfigForm.$pristine || saving" class="kc-report-button btn btn-success pull-right" title="Save Changes">
+						<i class="fa fa-save"></i>&nbsp;Save
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
